@@ -38,9 +38,9 @@ func (v *Volatile[K, V]) cleanupRoutine(interval time.Duration) {
 
 func NewVolatile[K comparable, V any](timeToLive time.Duration, cleanupInterval time.Duration) *Volatile[K, V] {
 	v := &Volatile[K, V]{
-		data:       make(map[K]Element[V]),
 		timeToLive: timeToLive,
 	}
+	v.Clear()
 	go v.cleanupRoutine(cleanupInterval)
 	return v
 }
@@ -72,6 +72,15 @@ func (v *Volatile[K, V]) Remove(key K) (*V, error) {
 
 	delete(v.data, key)
 	return value.value, nil
+}
+
+func (v *Volatile[K, V]) Length() int {
+	v.clean()
+	return len(v.data)
+}
+
+func (v *Volatile[K, V]) Clear() {
+	v.data = make(map[K]Element[V])
 }
 
 func (v *Volatile[K, V]) Set(key K, value *V) {

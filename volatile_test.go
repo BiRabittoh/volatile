@@ -45,6 +45,62 @@ func TestVolatile_Remove(t *testing.T) {
 	}
 }
 
+func TestVolatile_Length(t *testing.T) {
+	cache := NewVolatile[string, int](100*time.Millisecond, 50*time.Millisecond)
+
+	if cache.Length() != 0 {
+		t.Errorf("expected length to be 0, got %d", cache.Length())
+	}
+
+	v1 := 1
+	v2 := 2
+
+	cache.Set("key1", &v1)
+	cache.Set("key2", &v2)
+
+	if cache.Length() != 2 {
+		t.Errorf("expected length to be 2, got %d", cache.Length())
+	}
+
+	// Wait for the elements to expire and be cleaned up
+	time.Sleep(300 * time.Millisecond)
+
+	if cache.Length() != 0 {
+		t.Errorf("expected length to be 0 after expiration, got %d", cache.Length())
+	}
+}
+
+func TestVolatile_Clear(t *testing.T) {
+	cache := NewVolatile[string, int](2*time.Second, 1*time.Second)
+
+	v1 := 1
+	v2 := 2
+	v3 := 3
+
+	// Insert multiple items
+	cache.Set("key1", &v1)
+	cache.Set("key2", &v2)
+	cache.Set("key3", &v3)
+
+	// Ensure items are set
+	if !cache.Has("key1") || !cache.Has("key2") || !cache.Has("key3") {
+		t.Fatal("expected keys to be set")
+	}
+
+	// Clear the cache
+	cache.Clear()
+
+	// Ensure all items are cleared
+	if cache.Has("key1") || cache.Has("key2") || cache.Has("key3") {
+		t.Fatal("expected all keys to be cleared")
+	}
+
+	// Ensure map is empty
+	if len(cache.data) != 0 {
+		t.Errorf("expected map to be empty, got %d elements", len(cache.data))
+	}
+}
+
 func TestVolatile_Clean(t *testing.T) {
 	cache := NewVolatile[string, string](100*time.Millisecond, 50*time.Millisecond)
 
