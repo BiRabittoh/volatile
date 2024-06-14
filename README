@@ -1,0 +1,28 @@
+volatile
+--------
+
+A (dead) simple volatile data storage written in Go.
+
+
+FEATURES
+
+• Automatic cleanup via goroutines!
+• Get, Set, Has and Remove methods!
+• Can be as fast (or slow) as you wish!
+• Does not use any external libraries, only native go!
+• Absolutely unsafe memory-wise and probably more resource-intensive than any other alternative.
+
+
+USAGE
+
+Check out 'volatile_test.go' for some examples.
+
+
+INSTALLING
+
+go get github.com/BiRabittoh/volatile
+
+
+LICENSE
+
+volatile is licensed under MIT.
